@@ -5,7 +5,10 @@ let loggedInCompany = null;
 let companiesData = [];
 
 // API URL - JSON Server
-const API_URL = 'http://localhost:3000';
+//const API_URL = 'http://localhost:3000';
+
+const API_URL = 'https://my-json-server.typicode.com/ingagim1ingagim1-spec/firma';
+
 
 // ==================== INICIALIZIMI ====================
 document.addEventListener('DOMContentLoaded', function() {
