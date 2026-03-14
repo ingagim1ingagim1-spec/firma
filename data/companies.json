@@ -1,0 +1,48 @@
+{
+  "companies": [
+    {
+      "id": 1,
+      "name": "Ulliri Jon",
+      "sector": "ushqimore",
+      "email": "kontakt@ullirijon.al",
+      "phone": "+355 69 123 4567",
+      "address": "Tiranë, Shqipëri",
+      "password": "ulliri123",
+      "logo": "fa-solid fa-leaf",
+      "products": [
+        { "id": 101, "name": "Vaj Ulliri Extra", "price": 7.50, "unit": "Litr", "features": ["BIO", "Organik", "Prodhim Vendor"], "image": "fa-solid fa-oil-can" },
+        { "id": 102, "name": "Ullinj të Vegjël", "price": 4.00, "unit": "500g", "features": ["Pa konservues", "Vintage 2025"], "image": "fa-solid fa-bowl-food" },
+        { "id": 103, "name": "Djathë i Bardhë", "price": 8.50, "unit": "kg", "features": ["Qumësht delesh", "Tradicional"], "image": "fa-solid fa-cheese" }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Supermarketi X",
+      "sector": "ushqimore",
+      "email": "info@supermarketix.al",
+      "phone": "+355 69 234 5678",
+      "address": "Durrës, Shqipëri",
+      "password": "super123",
+      "logo": "fa-solid fa-store",
+      "products": [
+        { "id": 201, "name": "Vaj Ulliri Extra", "price": 6.90, "unit": "Litr", "features": ["Import", "Në dispozicion"], "image": "fa-solid fa-oil-can" },
+        { "id": 202, "name": "Oriz", "price": 1.20, "unit": "kg", "features": ["Paketim 1kg", "Oriz i gjatë"], "image": "fa-solid fa-bowl-food" },
+        { "id": 203, "name": "Sheqer", "price": 0.90, "unit": "kg", "features": ["Sheqer i bardhë", "Paketim 1kg"], "image": "fa-solid fa-cube" }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Kooperativa Vlorë",
+      "sector": "ushqimore",
+      "email": "kooperativa@vlore.al",
+      "phone": "+355 69 345 6789",
+      "address": "Vlorë, Shqipëri",
+      "password": "vlora123",
+      "logo": "fa-solid fa-hand-holding-heart",
+      "products": [
+        { "id": 301, "name": "Vaj Ulliri Extra", "price": 8.00, "unit": "Litr", "features": ["I pari i shtypit", "Kanister 5L", "BIO"], "image": "fa-solid fa-oil-can" },
+        { "id": 302, "name": "Mjalta e Malit", "price": 12.00, "unit": "500g", "features": ["Mjalte e pastër", "Pa sheqer"], "image": "fa-solid fa-jar" }
+      ]
+    }
+  ]
+}
