@@ -1,0 +1,959 @@
+// Current state
+let currentView = 'product';
+let searchResults = [];
+let loggedInCompany = null;
+let companiesData = [];
+
+// API URL - JSON Server
+const API_URL = 'http://localhost:3000';
+
+// ==================== INICIALIZIMI ====================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Faqja po ngarkohet...');
+    loadCompaniesFromAPI();
+});
+
+// Ngarko të dhënat nga API
+async function loadCompaniesFromAPI() {
+    try {
+        const response = await fetch(`${API_URL}/companies`);
+        companiesData = await response.json();
+        console.log('Të dhënat u ngarkuan nga API:', companiesData.length, 'firma');
+        initializePage();
+    } catch (error) {
+        console.error('Gabim në ngarkimin e të dhënave:', error);
+        showErrorMessage('Nuk mund të lidhej me serverin. Sigurohuni që json-server është duke punuar!');
+    }
+}
+
+// Ruaj të dhënat në API
+async function saveCompaniesToAPI() {
+    try {
+        // Për shkak se json-server nuk ka endpoint bulk update,
+        // përditësojmë çdo kompani individualisht
+        for (const company of companiesData) {
+            await fetch(`${API_URL}/companies/${company.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(company)
+            });
+        }
+        console.log('Të dhënat u ruajtën në API');
+        return true;
+    } catch (error) {
+        console.error('Gabim në ruajtjen e të dhënave:', error);
+        showErrorMessage('Nuk u ruajtën të dhënat!');
+        return false;
+    }
+}
+
+// Shto kompani të re në API
+async function addCompanyToAPI(company) {
+    try {
+        const response = await fetch(`${API_URL}/companies`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(company)
+        });
+        const newCompany = await response.json();
+        return newCompany;
+    } catch (error) {
+        console.error('Gabim në shtimin e kompanisë:', error);
+        showErrorMessage('Nuk u shtua kompania!');
+        return null;
+    }
+}
+
+// Përditëso kompani në API
+async function updateCompanyInAPI(company) {
+    try {
+        const response = await fetch(`${API_URL}/companies/${company.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(company)
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Gabim në përditësimin e kompanisë:', error);
+        showErrorMessage('Nuk u përditësua kompania!');
+        return null;
+    }
+}
+
+// Funksion për të inicializuar faqen
+function initializePage() {
+    console.log('Inicializimi i faqes...');
+    
+    displayCompaniesDirectory();
+    
+    // Setup search form
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', handleSearch);
+    }
+    
+    // Setup view toggle buttons
+    const productViewBtn = document.getElementById('productViewBtn');
+    const companyViewBtn = document.getElementById('companyViewBtn');
+    
+    if (productViewBtn) {
+        productViewBtn.addEventListener('click', () => toggleView('product'));
+    }
+    
+    if (companyViewBtn) {
+        companyViewBtn.addEventListener('click', () => toggleView('company'));
+    }
+    
+    // Setup registration form
+    const registrationForm = document.getElementById('companyRegistrationForm');
+    if (registrationForm) {
+        registrationForm.addEventListener('submit', handleRegistration);
+    }
+    
+    // Setup sector card clicks
+    document.querySelectorAll('.sector-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('sector-link')) {
+                const sector = this.dataset.sector;
+                filterBySector(sector);
+            }
+        });
+    });
+    
+    // Setup login button
+    const loginBtn = document.querySelector('.btn-outline');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', openLoginModal);
+    }
+    
+    // Setup login form
+    const loginForm = document.getElementById('companyLoginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleCompanyLogin);
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginModal');
+        if (event.target == modal) {
+            closeLoginModal();
+        }
+    };
+    
+    // Initial display - show all products
+    searchResults = getAllProducts();
+    displayResults();
+    
+    // Shto event për kontrollin e email-it
+    const emailField = document.getElementById('companyEmail');
+    if (emailField) {
+        emailField.addEventListener('input', checkEmailAvailability);
+    }
+    
+    console.log('Inicializimi përfundoi!');
+}
+
+// Get all products from all companies
+function getAllProducts() {
+    const allProducts = [];
+    
+    companiesData.forEach(company => {
+        if (company.products && company.products.length > 0) {
+            company.products.forEach(product => {
+                allProducts.push({
+                    ...product,
+                    companyName: company.name,
+                    companySector: company.sector || company.sector,
+                    companyPhone: company.phone,
+                    companyEmail: company.email,
+                    companyAddress: company.address,
+                    companyLogo: company.logo
+                });
+            });
+        }
+    });
+    
+    return allProducts;
+}
+
+// Handle search
+function handleSearch(e) {
+    e.preventDefault();
+    
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+    
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    if (searchTerm === '') {
+        searchResults = getAllProducts();
+    } else {
+        searchResults = getAllProducts().filter(product => {
+            const nameMatch = product.name.toLowerCase().includes(searchTerm);
+            const featureMatch = product.features ? product.features.some(f => 
+                f.toLowerCase().includes(searchTerm)
+            ) : false;
+            return nameMatch || featureMatch;
+        });
+    }
+    
+    const searchQueryDisplay = document.getElementById('searchQueryDisplay');
+    if (searchQueryDisplay) {
+        searchQueryDisplay.textContent = searchTerm || 'të gjitha produktet';
+    }
+    
+    displayResults();
+}
+
+// Display results based on current view
+function displayResults() {
+    if (currentView === 'product') {
+        displayProductComparison();
+    } else {
+        displayCompanyResults();
+    }
+    
+    const resultsCount = document.getElementById('resultsCount');
+    if (resultsCount) {
+        resultsCount.textContent = searchResults.length;
+    }
+    
+    const noResults = document.getElementById('noResults');
+    if (noResults) {
+        noResults.style.display = searchResults.length === 0 ? 'block' : 'none';
+    }
+}
+
+// Display product comparison view
+function displayProductComparison() {
+    const container = document.getElementById('productComparisonView');
+    if (!container) return;
+    
+    if (searchResults.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    const productsByName = {};
+    searchResults.forEach(product => {
+        if (!productsByName[product.name]) {
+            productsByName[product.name] = [];
+        }
+        productsByName[product.name].push(product);
+    });
+    
+    let html = '';
+    
+    for (const [productName, products] of Object.entries(productsByName)) {
+        html += `
+            <h3 class="product-group-title">${productName}</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Firma</th>
+                        <th>Çmimi</th>
+                        <th>Karakteristika</th>
+                        <th>Kontakt</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        products.sort((a, b) => a.price - b.price);
+        
+        products.forEach(product => {
+            const lowestPrice = products[0].price === product.price ? 'lowest-price' : '';
+            
+            html += `
+                <tr>
+                    <td>
+                        <strong class="product-name">${product.companyName}</strong>
+                        <div><span class="company-badge">${product.companySector || ''}</span></div>
+                        <div><i class="fas fa-map-marker-alt"></i> ${product.companyAddress || ''}</div>
+                    </td>
+                    <td class="price ${lowestPrice}">
+                        €${typeof product.price === 'number' ? product.price.toFixed(2) : product.price} / ${product.unit || ''}
+                        ${lowestPrice ? '<div><small>Çmimi më i ulët</small></div>' : ''}
+                    </td>
+                    <td>
+                        ${product.features ? product.features.map(f => `<span class="feature-tag">${f}</span>`).join(' ') : ''}
+                    </td>
+                    <td>
+                        <div><i class="fas fa-phone"></i> ${product.companyPhone || ''}</div>
+                        <div><i class="fas fa-envelope"></i> ${product.companyEmail || ''}</div>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+            </table>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+// Display company results view
+function displayCompanyResults() {
+    const container = document.getElementById('companyView');
+    if (!container) return;
+    
+    if (searchResults.length === 0) {
+        container.innerHTML = '<p class="no-results">Nuk u gjet asnjë firmë për këtë kërkim.</p>';
+        return;
+    }
+    
+    const companyNames = [...new Set(searchResults.map(p => p.companyName))];
+    const relevantCompanies = companiesData.filter(c => companyNames.includes(c.name));
+    
+    if (relevantCompanies.length === 0) {
+        container.innerHTML = '<p class="no-results">Nuk u gjet asnjë firmë.</p>';
+        return;
+    }
+    
+    let html = '<div class="companies-list">';
+    
+    relevantCompanies.forEach(company => {
+        const matchingProducts = searchResults.filter(p => p.companyName === company.name);
+        const productsList = matchingProducts.map(p => p.name).join(', ');
+        
+        html += `
+            <div class="company-card" onclick="showCompanyProducts('${company.name}')" style="cursor: pointer;">
+                <div class="company-logo">
+                    <i class="${company.logo || 'fa-solid fa-building'}"></i>
+                </div>
+                <div class="company-info">
+                    <h3>${company.name}</h3>
+                    <span class="company-sector">${company.sector || 'Sektor i papërcaktuar'}</span>
+                    <p><i class="fas fa-map-marker-alt"></i> ${company.address || 'Adresa e papërcaktuar'}</p>
+                    <p><i class="fas fa-phone"></i> ${company.phone || 'Telefoni i papërcaktuar'}</p>
+                    <div class="company-products">
+                        <span>Produkte që përputhen:</span>
+                        ${productsList}
+                    </div>
+                </div>
+                <button class="view-products-btn" onclick="event.stopPropagation(); showCompanyProducts('${company.name}')">
+                    Shiko të gjitha
+                </button>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Display companies directory
+function displayCompaniesDirectory() {
+    const grid = document.getElementById('companyGrid');
+    if (!grid) return;
+    
+    let html = '';
+    
+    companiesData.forEach(company => {
+        html += `
+            <div class="directory-card" onclick="showCompanyProducts('${company.name}')" style="cursor: pointer;">
+                <div class="company-icon">
+                    <i class="${company.logo || 'fa-solid fa-building'}"></i>
+                </div>
+                <h4>${company.name}</h4>
+                <span class="sector-tag">${company.sector || 'Sektor'}</span>
+                <p><small>${company.products ? company.products.length : 0} produkte</small></p>
+            </div>
+        `;
+    });
+    
+    grid.innerHTML = html;
+}
+
+// Toggle between product and company view
+function toggleView(view) {
+    currentView = view;
+    
+    const productViewBtn = document.getElementById('productViewBtn');
+    const companyViewBtn = document.getElementById('companyViewBtn');
+    const productComparisonView = document.getElementById('productComparisonView');
+    const companyView = document.getElementById('companyView');
+    
+    if (productViewBtn) productViewBtn.classList.toggle('active', view === 'product');
+    if (companyViewBtn) companyViewBtn.classList.toggle('active', view === 'company');
+    if (productComparisonView) productComparisonView.classList.toggle('active', view === 'product');
+    if (companyView) companyView.classList.toggle('active', view === 'company');
+    
+    displayResults();
+}
+
+// Filter by sector
+function filterBySector(sector) {
+    searchResults = getAllProducts().filter(p => p.companySector === sector);
+    
+    const searchQueryDisplay = document.getElementById('searchQueryDisplay');
+    if (searchQueryDisplay) {
+        searchQueryDisplay.textContent = `Sektori: ${sector}`;
+    }
+    
+    displayResults();
+    
+    const resultsSection = document.getElementById('results');
+    if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Show company products
+window.showCompanyProducts = function(companyName) {
+    const company = companiesData.find(c => c.name === companyName);
+    
+    if (company && company.products) {
+        searchResults = company.products.map(p => ({
+            ...p,
+            companyName: company.name,
+            companySector: company.sector,
+            companyPhone: company.phone,
+            companyEmail: company.email,
+            companyAddress: company.address,
+            companyLogo: company.logo
+        }));
+        
+        const searchQueryDisplay = document.getElementById('searchQueryDisplay');
+        if (searchQueryDisplay) {
+            searchQueryDisplay.textContent = `Produktet e ${companyName}`;
+        }
+        
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        
+        toggleView('product');
+        displayResults();
+        
+        const resultsSection = document.getElementById('results');
+        if (resultsSection) {
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+};
+
+// ==================== REGJISTRIMI DHE HYRJA ====================
+
+// Handle company registration
+async function handleRegistration(e) {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn.disabled) return;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Duke regjistruar...';
+    
+    const companyEmail = document.getElementById('companyEmail').value;
+    const companyName = document.getElementById('companyName').value;
+    const companyPassword = document.getElementById('companyPassword')?.value || 'temp123';
+    
+    // Kontrollo nëse email-i ekziston
+    const existingCompany = companiesData.find(c => c.email.toLowerCase() === companyEmail.toLowerCase());
+    
+    if (existingCompany) {
+        showErrorMessage('Ky email është përdorur tashmë!');
+        document.getElementById('companyEmail').style.borderColor = 'red';
+        
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Dërgo Regjistrimin';
+        return;
+    }
+    
+    // Krijo firmën e re
+    const newCompany = {
+        id: Date.now(), // JSON Server do ta mbishkruajë këtë me ID të vetën
+        name: companyName,
+        email: companyEmail,
+        phone: document.getElementById('companyPhone').value,
+        sector: document.getElementById('companySector').value,
+        address: document.getElementById('companyAddress').value,
+        password: companyPassword,
+        logo: 'fa-solid fa-building',
+        products: [],
+        registeredDate: new Date().toISOString()
+    };
+    
+    // Shto firmën në API
+    const addedCompany = await addCompanyToAPI(newCompany);
+    
+    if (addedCompany) {
+        // Shto firmën në listën lokale
+        companiesData.push(addedCompany);
+        
+        // Rifresko direktoriumin
+        displayCompaniesDirectory();
+        
+        showSuccessMessage('Regjistrimi u krye me sukses!');
+        
+        e.target.reset();
+        
+        setTimeout(() => {
+            openLoginModal();
+            const loginEmail = document.getElementById('loginEmail');
+            if (loginEmail) {
+                loginEmail.value = companyEmail;
+            }
+        }, 2000);
+    }
+    
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Dërgo Regjistrimin';
+}
+
+// Open login modal
+function openLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'block';
+    }
+}
+
+// Close login modal
+function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Handle company login
+function handleCompanyLogin(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    const company = companiesData.find(c => c.email.toLowerCase() === email.toLowerCase());
+    
+    if (company) {
+        if (company.password === password) {
+            loggedInCompany = company;
+            closeLoginModal();
+            showCompanyPanel();
+            e.target.reset();
+            showSuccessMessage(`Mirë se vini, ${company.name}!`);
+        } else {
+            showErrorMessage('Fjalëkalim i gabuar!');
+            document.getElementById('loginPassword').style.borderColor = 'red';
+        }
+    } else {
+        showErrorMessage('Email nuk u gjet! Ju lutem regjistrohuni fillimisht.');
+        document.getElementById('loginEmail').style.borderColor = 'red';
+    }
+}
+
+// Show company panel
+function showCompanyPanel() {
+    const hero = document.querySelector('.hero');
+    const sectors = document.querySelector('.sectors');
+    const resultsSection = document.querySelector('.results-section');
+    const companiesDirectory = document.querySelector('.companies-directory');
+    const registrationSection = document.querySelector('.registration-section');
+    const companyPanel = document.getElementById('companyPanel');
+    
+    if (hero) hero.style.display = 'none';
+    if (sectors) sectors.style.display = 'none';
+    if (resultsSection) resultsSection.style.display = 'none';
+    if (companiesDirectory) companiesDirectory.style.display = 'none';
+    if (registrationSection) registrationSection.style.display = 'none';
+    
+    if (companyPanel) {
+        companyPanel.style.display = 'block';
+        
+        const panelCompanyName = document.getElementById('panelCompanyName');
+        if (panelCompanyName) {
+            panelCompanyName.textContent = loggedInCompany.name;
+        }
+        
+        loadCompanyProducts();
+    }
+}
+
+// Logout company
+function logoutCompany() {
+    loggedInCompany = null;
+    
+    const hero = document.querySelector('.hero');
+    const sectors = document.querySelector('.sectors');
+    const resultsSection = document.querySelector('.results-section');
+    const companiesDirectory = document.querySelector('.companies-directory');
+    const registrationSection = document.querySelector('.registration-section');
+    const companyPanel = document.getElementById('companyPanel');
+    
+    if (hero) hero.style.display = 'block';
+    if (sectors) sectors.style.display = 'block';
+    if (resultsSection) resultsSection.style.display = 'block';
+    if (companiesDirectory) companiesDirectory.style.display = 'block';
+    if (registrationSection) registrationSection.style.display = 'block';
+    
+    if (companyPanel) {
+        companyPanel.style.display = 'none';
+    }
+    
+    showSuccessMessage('Dolët nga llogaria');
+}
+
+// ==================== MENAXHIMI I PRODUKTEVE ====================
+
+// Load company products
+
+
+
+function loadCompanyProducts() {
+    const tbody = document.getElementById('companyProductsBody');
+    if (!tbody) return;
+
+    if (!loggedInCompany.products || loggedInCompany.products.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center;padding:30px;">
+                    Nuk keni produkte ende
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    // NDARJA SIPAS SEKTORIT
+    const productsBySector = {};
+
+    loggedInCompany.products.forEach(product => {
+        const sector = product.sector || "Pa sektor";
+
+        if (!productsBySector[sector]) {
+            productsBySector[sector] = [];
+        }
+
+        productsBySector[sector].push(product);
+    });
+
+    let html = '';
+
+    for (const sector in productsBySector) {
+
+        html += `
+        <tr>
+            <td colspan="5" style="
+                background:#f5f5f5;
+                font-weight:bold;
+                padding:10px;
+                font-size:16px;">
+                SEKTORI: ${sector}
+            </td>
+        </tr>
+        `;
+
+        productsBySector[sector].forEach(product => {
+
+            html += `
+            <tr>
+                <td><strong>${product.name}</strong></td>
+                <td>€${product.price}</td>
+                <td>${product.unit || '-'}</td>
+                <td>${product.features ? product.features.join(', ') : '-'}</td>
+                <td>
+                    <button class="action-btn edit-btn" onclick="editProduct(${product.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+
+                    <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+            `;
+        });
+    }
+
+    tbody.innerHTML = html;
+}
+
+// Show add product form
+function showAddProductForm() {
+    const form = document.getElementById('addProductForm');
+    if (form) {
+        form.style.display = 'block';
+        form.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Hide add product form
+function hideAddProductForm() {
+    const form = document.getElementById('addProductForm');
+    if (form) {
+        form.style.display = 'none';
+    }
+    
+    const productForm = document.getElementById('productRegistrationForm');
+    if (productForm) {
+        productForm.reset();
+        delete productForm.dataset.editingId;
+        
+        const submitBtn = productForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Ruaje Produktin';
+        }
+    }
+}
+
+// Add or update product
+async function addNewProduct(e) {
+    e.preventDefault();
+    
+    const featuresInput = document.getElementById('productFeatures').value;
+    let features = [];
+    
+    if (featuresInput) {
+        features = featuresInput.split(',')
+            .map(f => f.trim())
+            .filter(f => f !== '');
+    }
+    
+
+         const selectedSector = document.getElementById('productSector').value;
+    
+
+
+
+    const productData = {
+        id: Date.now(),
+        name: document.getElementById('productName').value,
+        price: parseFloat(document.getElementById('productPrice').value),
+        unit: document.getElementById('productUnit').value,
+        sector: selectedSector,     // KJO ESHTE E RENDESISHME
+        features: features,
+        description: document.getElementById('productDescription').value,
+        category: document.getElementById('productCategory').value,
+        stock: document.getElementById('productStock').value || '0',
+        image: 'fa-solid fa-box'
+        
+
+        
+
+        
+    };
+    
+    const form = document.getElementById('productRegistrationForm');
+    const editingId = form.dataset.editingId;
+    
+    if (editingId) {
+        // EDITIM
+        const index = loggedInCompany.products.findIndex(p => p.id == editingId);
+        if (index !== -1) {
+            productData.id = parseInt(editingId);
+            loggedInCompany.products[index] = productData;
+        }
+        
+        delete form.dataset.editingId;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Ruaje Produktin';
+        }
+        
+        showSuccessMessage('Produkti u përditësua me sukses!');
+    } else {
+        // SHTIM I RI
+        if (!loggedInCompany.products) {
+            loggedInCompany.products = [];
+        }
+        loggedInCompany.products.push(productData);
+        showSuccessMessage('Produkti u shtua me sukses!');
+    }
+    
+    // Përditëso kompaninë në API
+    const companyIndex = companiesData.findIndex(c => c.id === loggedInCompany.id);
+    if (companyIndex !== -1) {
+        companiesData[companyIndex] = {...loggedInCompany};
+        await updateCompanyInAPI(loggedInCompany);
+    }
+    
+    loggedInCompany = companiesData.find(c => c.id === loggedInCompany.id);
+    
+    loadCompanyProducts();
+    hideAddProductForm();
+    displayCompaniesDirectory();
+}
+
+// Delete product
+window.deleteProduct = async function(productId) {
+    if (confirm('Jeni i sigurt që doni të fshini këtë produkt?')) {
+        loggedInCompany.products = loggedInCompany.products.filter(p => p.id !== productId);
+        
+        const companyIndex = companiesData.findIndex(c => c.id === loggedInCompany.id);
+        if (companyIndex !== -1) {
+            companiesData[companyIndex] = {...loggedInCompany};
+            await updateCompanyInAPI(loggedInCompany);
+        }
+        
+        loadCompanyProducts();
+        displayCompaniesDirectory();
+        
+        showSuccessMessage('Produkti u fshi!');
+    }
+};
+
+// Edit product
+window.editProduct = function(productId) {
+    const product = loggedInCompany.products.find(p => p.id === productId);
+    
+    if (product) {
+        document.getElementById('productName').value = product.name || '';
+        document.getElementById('productPrice').value = product.price || '';
+        document.getElementById('productUnit').value = product.unit || '';
+        document.getElementById('productCategory').value = product.category || '';
+        
+        if (product.features) {
+            const featuresText = Array.isArray(product.features) 
+                ? product.features.join(', ') 
+                : product.features;
+            document.getElementById('productFeatures').value = featuresText;
+        } else {
+            document.getElementById('productFeatures').value = '';
+        }
+        
+        document.getElementById('productDescription').value = product.description || '';
+        document.getElementById('productStock').value = product.stock || '';
+        
+        const form = document.getElementById('productRegistrationForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        form.dataset.editingId = productId;
+        
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Përditëso Produktin';
+        }
+        
+        showAddProductForm();
+    }
+};
+
+// ==================== FUNKSIONET NDIHMËSE ====================
+
+// Show success message
+function showSuccessMessage(message) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'success-message';
+    msgDiv.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(msgDiv);
+    
+    setTimeout(() => {
+        msgDiv.remove();
+    }, 3000);
+}
+
+// Show error message
+function showErrorMessage(message) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'error-message';
+    msgDiv.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(msgDiv);
+    
+    setTimeout(() => {
+        msgDiv.remove();
+    }, 4000);
+}
+
+// Check email availability
+function checkEmailAvailability() {
+    const email = document.getElementById('companyEmail').value;
+    const emailField = document.getElementById('companyEmail');
+    const existingCompany = companiesData.find(c => c.email.toLowerCase() === email.toLowerCase());
+    
+    if (existingCompany) {
+        emailField.style.borderColor = 'red';
+        
+        let availabilityMsg = document.getElementById('emailAvailabilityMsg');
+        if (!availabilityMsg) {
+            availabilityMsg = document.createElement('small');
+            availabilityMsg.id = 'emailAvailabilityMsg';
+            availabilityMsg.style.color = 'red';
+            emailField.parentNode.appendChild(availabilityMsg);
+        }
+        availabilityMsg.textContent = 'Ky email është i zënë';
+    } else {
+        emailField.style.borderColor = 'green';
+        
+        let availabilityMsg = document.getElementById('emailAvailabilityMsg');
+        if (availabilityMsg) {
+            availabilityMsg.textContent = 'Email i lirë';
+            availabilityMsg.style.color = 'green';
+        }
+    }
+}
+
+// Add smooth scrolling for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+/*
+
+const defaultCompanies = [
+    // ... firmat ekzistuese ...
+    
+    // SHTONI KETU FIRMË SHEMBULL PËR SEKTORIN E RI
+    {
+        id: 9,
+        name: "Elektro Shtëpi",
+        sector: "teknike-bardhe",
+        email: "info@elektroshtepi.al",
+        phone: "+355 69 999 8888",
+        address: "Tiranë, Shqipëri",
+        password: "elektro123",
+        logo: "fa-solid fa-washing-machine",
+        products: [
+            { 
+                id: 901, 
+                name: "Lavatriçe Automatic", 
+                price: 450.00, 
+                unit: "copë", 
+                features: ["8 kg", "1000 rpm", "Klas A+++"], 
+                image: "fa-solid fa-washing-machine" 
+            },
+            { 
+                id: 902, 
+                name: "Frigorifer", 
+                price: 380.00, 
+                unit: "copë", 
+                features: ["No Frost", "300 L", "Inverter"], 
+                image: "fa-solid fa-refrigerator" 
+            }
+        ]
+    }
+];
+*/
+
+

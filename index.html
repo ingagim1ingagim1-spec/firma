@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TreguProdukteve - Krahasimi i Produkteve Shqiptare</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+
+
+
+    
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Tregu<span>Produkteve</span></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home" class="active">Kryefaqja</a></li>
+                    
+                    <!-- Header Section <li><a href="#sectors">Sektorët</a></li> -->
+                     <li><a href="#" id="menuSectors">Sektorët</a></li>
+                    
+                    <li><a href="#companies">Firmat</a></li>
+                    <li><a href="#register">Regjistrohu</a></li>
+                    <li><a href="#contact">Kontakt</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-outline">Hyr</button>
+                <button class="btn btn-primary">Regjistrohu si Shitës</button>
+            </div>
+        </div>
+    </header>
+
+
+
+ 
+
+
+    <!-- Hero Section with Search -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h2>Gjeni produktet më të mira nga firmat shqiptare</h2>
+            <p>Krahasoni çmimet, cilësinë dhe ofertat nga prodhues dhe shitës vendorë</p>
+            
+            <!-- Search Section -->
+            <div class="search-container">
+                <form id="searchForm">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Kërkoni produkte... p.sh., 'vaj ulliri', 'detergjent', 'bluzë pambuku'" autocomplete="off">
+                        <button type="submit" class="btn btn-search">Kërko</button>
+                    </div>
+
+                 
+                </form>
+                
+                <!-- View Toggle -->
+                <div class="view-toggle">
+                    <span class="toggle-label">Pamja:</span>
+                    <div class="toggle-buttons">
+                        <button id="productViewBtn" class="toggle-btn active">
+                            <i class="fas fa-th-large"></i> Krahaso Produkte
+                        </button>
+                        <button id="companyViewBtn" class="toggle-btn">
+                            <i class="fas fa-building"></i> Shiko Firmat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- pjesa e rreklamave majtas -->
+
+<div class="page-layout">
+
+    <!-- Reklama majtas -->
+    <aside class="sidebar left-ads">
+        <div class="ad-box">
+            <h4>Reklamë</h4>
+            <img src="images/ad1.jpg" alt="Reklamë">
+        </div>
+
+        <div class="ad-box">
+            <h4>Firma Sponsor</h4>
+            <img src="images/ad2.jpg" alt="Reklamë">
+        </div>
+
+
+                  
+        
+        <!-- Reklama majtas sipas kohes shfletohet nga folderi i fotove-->
+        <div class="ad-box">
+             <img id="adImage" src="images/ad2.jpg">
+        </div>
+
+
+
+
+        
+        <!-- Në vend që të përsëritësh div-at, vendos vetëm këtë per rekllama, merren ne mainfoto.js-->
+          <div id="reklamatm-container" class="reklamat-grid"></div>
+    </aside>
+
+    <!-- Përmbajtja kryesore -->
+    <main class="main-content">
+
+
+
+
+
+
+    <!-- Quick Categories/Sectors -->
+    <section class="sectors" id="sectors">
+        <div class="container">
+            <h2 class="section-title">Sektorët Kryesorë</h2>
+            <div class="sector-grid">
+                <div class="sector-card" data-sector="ushqimore">
+                    <div class="sector-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Ushqimore</h3>
+                    <p>Produkte bujqësore, ushqime të freskëta, pije dhe më shumë</p>
+                    <a href="#" class="sector-link">Eksploro <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="sector-card" data-sector="higjienike">
+                    <div class="sector-icon">
+                        <i class="fas fa-soap"></i>
+                    </div>
+                    <h3>Higjienike</h3>
+                    <p>Produkte pastrimi, kozmetikë, kujdes personal</p>
+                    <a href="#" class="sector-link">Eksploro <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="sector-card" data-sector="tekstile">
+                    <div class="sector-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Tekstile</h3>
+                    <p>Veshje, pëlhura, çanta dhe produkte tekstili</p>
+                    <a href="#" class="sector-link">Eksploro <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+<!-- SHTONI KETU SEKTORIN E RI -->
+                <div class="sector-card" data-sector="teknike-bardhe">
+                    <div class="sector-icon">
+                        <i class="fas fa-blender"></i>  <!-- Ndrysho ikonën -->
+                    </div>
+                    <h3>Teknike e Bardhë</h3>
+                    <p>Pajisje shtëpiake, frigoriferë, lavatriçe dhe më shumë</p>
+                    <a href="#" class="sector-link">Eksploro <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+
+<!-- SHTONI KETU SEKTORIN E RI elektronik-->
+                <div class="sector-card" data-sector="elektronik">
+                    <div class="sector-icon">
+                        <i class="fas fa-blender"></i>  <!-- Ndrysho ikonën -->
+                    </div>
+                    <h3>elektronik</h3>
+                    <p>Pajisje elektronike, televizore, videolojra dhe më shumë</p>
+                    <a href="#" class="sector-link">Eksploro <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section (Dynamic) -->
+    <section class="results-section" id="results">
+        <div class="container">
+            <div class="results-header">
+                <h3 id="resultsTitle">Rezultatet për: <span id="searchQueryDisplay"></span></h3>
+                <div class="results-count">
+                    <span id="resultsCount">0</span> produkte të gjetura
+                </div>
+            </div>
+
+            <!-- Product Comparison View (Default) -->
+            <div id="productComparisonView" class="comparison-view active">
+                <!-- Dynamic comparison table will be inserted here by JavaScript -->
+            </div>
+
+            <!-- Company View (Alternative) -->
+            <div id="companyView" class="company-view">
+                <!-- Dynamic company list will be inserted here by JavaScript -->
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>Nuk u gjet asnjë produkt</h3>
+                <p>Provoni të kërkoni me fjalë kyçe të tjera ose eksploroni kategoritë tona.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Companies Directory -->
+    <section class="companies-directory" id="companies">
+        <div class="container">
+            <h2 class="section-title">Të Gjitha Firmat e Regjistruara</h2>
+            <div class="company-grid" id="companyGrid">
+                <!-- Companies will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Section for Businesses -->
+    <!-- Registration Section for Businesses -->
+<section class="registration-section" id="register">
+    <div class="container">
+        <div class="registration-container">
+            <div class="registration-info">
+                <h2>Regjistro Firmën Tënde</h2>
+                <p>Vendosni produktet tuaja para mijëra klientëve të mundshëm. Është falas për të filluar!</p>
+                <ul class="benefits-list">
+                    <li><i class="fas fa-check-circle"></i> Vitrinë online për produktet tuaja</li>
+                    <li><i class="fas fa-check-circle"></i> Rritje e dukshmërisë së markës</li>
+                    <li><i class="fas fa-check-circle"></i> Krahasim i drejtpërdrejtë me konkurrentët</li>
+                    <li><i class="fas fa-check-circle"></i> Statistikat e kërkimeve të klientëve</li>
+                </ul>
+            </div>
+            <div class="registration-form">
+                <h3>Regjistrohu tani</h3>
+                <form id="companyRegistrationForm">
+                    <div class="form-group">
+                        <label for="companyName">Emri i Firmës</label>
+                        <input type="text" id="companyName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="companyEmail">Email</label>
+                        <input type="email" id="companyEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="companyPhone">Telefon</label>
+                        <input type="tel" id="companyPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="companySector">Sektori</label>
+                        <select id="companySector" required>
+                           
+
+
+
+
+                            <option value="">Zgjidh sektorin</option>
+                            <option value="ushqimore">Ushqimore</option>
+                            <option value="higjienike">Higjienike</option>
+                            <option value="tekstile">Tekstile</option>
+                            <option value="teknike-bardhe">Teknike e Bardhë</option>
+                            <option value="telektronik">telektronik</option>
+                        </select>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="companyAddress">Adresa</label>
+                        <input type="text" id="companyAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="companyPassword">Fjalëkalimi</label>
+                        <input type="password" id="companyPassword" required placeholder="Zgjidhni një fjalëkalim">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyProducts">Shto Produktin e Parë</label>
+                        <textarea id="companyProducts" rows="3" placeholder="Përshkruani produktin tuaj kryesor..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Dërgo Regjistrimin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- regjistrim produkti -->
+  
+
+<!-- Paneli i Firmës (Fshihet fillimisht) -->
+<section class="company-panel" id="companyPanel" style="display: none;">
+    <div class="container">
+        <div class="panel-header">
+            <h2>Paneli i Firmës: <span id="panelCompanyName"></span></h2>
+            <div class="panel-actions">
+                <button class="btn btn-outline" onclick="showAddProductForm()">
+                    <i class="fas fa-plus"></i> Shto Produkt të Ri
+                </button>
+                <button class="btn btn-secondary" onclick="logoutCompany()">
+                    <i class="fas fa-sign-out-alt"></i> Dil
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabela e Produkteve Ekzistuese -->
+        <div class="products-table-container">
+            <h3>Produktet e Mia</h3>
+            <table class="products-table" id="companyProductsTable">
+                <thead>
+                    <tr>
+                        <th>Produkti</th>
+                        <th>Çmimi</th>
+                        <th>Njësia</th>
+                        <th>Karakteristikat</th>
+                        <th>Veprime</th>
+                    </tr>
+                </thead>
+                <tbody id="companyProductsBody">
+                    <!-- Produktet do të shtohen këtu nga JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formulari për Shtimin e Produktit (Fshihet fillimisht) -->
+        <div class="product-form-container" id="addProductForm" style="display: none;">
+            <h3><i class="fas fa-plus-circle"></i> Shto Produkt të Ri</h3>
+            <form id="productRegistrationForm" onsubmit="addNewProduct(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productName">Emri i Produktit *</label>
+                        <input type="text" id="productName" required placeholder="p.sh., Vaj Ulliri Extra">
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Çmimi *</label>
+                        <input type="number" id="productPrice" step="0.01" min="0" required placeholder="7.50">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productUnit">Njësia *</label>
+                        <select id="productUnit" required>
+                            <option value="">Zgjidh njësinë</option>
+                            <option value="kg">Kilogram (kg)</option>
+                            <option value="Litr">Litr (L)</option>
+                            <option value="copë">Copë</option>
+                            <option value="500g">500 gram</option>
+                            <option value="250ml">250 ml</option>
+                            <option value="1L">1 Litër</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Kategoria</label>
+                        <input type="text" id="productCategory" placeholder="p.sh., Vajra, Bulmet, etj.">
+                    </div>
+                </div>
+
+
+
+
+
+
+               <!-- SHTONI KËTË PJESË TË RE per zgjedhje te sektorit -->
+                <div class="form-group">
+                    <label for="productSector">Sektori *</label>
+                    <select id="productSector" required>
+                        <option value="">Zgjidh sektorin</option>
+                        <option value="ushqimore">Ushqimore</option>
+                        <option value="higjienike">Higjienike</option>
+                        <option value="tekstile">Tekstile</option>
+                        <option value="teknike-bardhe">Teknike e Bardhë</option>
+                        <option value="elektronik">elektronik</option>
+                    </select>
+                </div>
+                <!-- DERI KËTU -->
+
+
+
+
+
+                <div class="form-group">
+                    <label for="productFeatures">Karakteristikat (ndaj me presje)</label>
+                    <input type="text" id="productFeatures" placeholder="p.sh., BIO, Organik, Prodhim Vendor, Pa konservues">
+                    <small>Shkruani karakteristikat të ndara me presje</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="productDescription">Përshkrimi i detajuar</label>
+                    <textarea id="productDescription" rows="3" placeholder="Përshkruani produktin tuaj..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="productImage">Foto e Produktit</label>
+                    <input type="file" id="productImage" accept="image/*">
+                    <small>Mund të ngarkoni një foto (opsionale)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="productStock">Sasia në Stok</label>
+                    <input type="number" id="productStock" min="0" placeholder="p.sh., 100">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Ruaje Produktin
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="hideAddProductForm()">
+                        Anulo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Dritarja e Hyrjes për Firmat (Modal) -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeLoginModal()">&times;</span>
+        <h2>Hyrja për Firmat</h2>
+        <form id="companyLoginForm" onsubmit="handleCompanyLogin(event)">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" required placeholder="info@firma.al">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Fjalëkalimi</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Hyr</button>
+        </form>
+        <p class="modal-footer">Nuk keni llogari? <a href="#" onclick="showRegistration()">Regjistrohu</a></p>
+    </div>
+</div>
+
+
+
+
+
+
+
+    </main>
+
+    <!-- Reklama djathtas -->
+    <aside class="sidebar right-ads">
+        <div class="ad-box">
+            <h4>Reklamë</h4>
+            <img src="images/ad1.jpg" alt="Reklamë">
+        </div>
+
+        <div class="ad-box">
+            <h4>Oferta Speciale</h4>
+            <img src="images/ad2.jpg" alt="Reklamë">
+           
+        </div>
+        <!-- Reklama djathtas sipas kohes shfletohet nga folderi i fotove-->
+        <div class="ad-box">
+             <img id="adImage1" src="images/ad2.jpg">
+        </div>
+
+
+
+
+        <!-- Në vend që të përsëritësh div-at, vendos vetëm këtë per rekllama, merren ne mainfoto.js-->
+         <div id="reklamat-container" class="reklamat-grid"></div>
+    </aside>
+
+</div>
+
+    
+
+
+
+
+<!-- rrekllam -->
+ 
+
+
+
+
+
+
+
+     <!-- Contact Section -->
+<section class="contact-section" id="contact">
+    <div class="container">
+        <h2 class="section-title">Na Kontaktoni</h2>
+
+        <div class="contact-container">
+
+            <div class="contact-info">
+                <p><i class="fas fa-envelope"></i> info@treguprodukteve.al</p>
+                <p><i class="fas fa-phone"></i> +355 69 123 4567</p>
+                <p><i class="fas fa-map-marker-alt"></i> Tirana, Shqipëri</p>
+            </div>
+
+            <form class="contact-form">
+                <div class="form-group">
+                    <input type="text" placeholder="Emri juaj" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" placeholder="Email-i juaj" required>
+                </div>
+
+                <div class="form-group">
+                    <textarea placeholder="Mesazhi juaj..." rows="4"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Dërgo Mesazhin
+                </button>
+            </form>
+
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>TreguProdukteve</h4>
+                    <p>Platforma më e madhe shqiptare për krahasimin e produkteve dhe gjetjen e firmave vendase.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Linke të Shpejta</h4>
+                    <ul>
+                        <li><a href="#home">Kryefaqja</a></li>
+                        <!-- Header Section <li><a href="#sectors">Sektorët</a></li> -->
+                     <li><a href="#" id="menuSectors">Sektorët</a></li>
+                    
+                        <li><a href="#companies">Firmat</a></li>
+                        <li><a href="#register">Regjistrimi</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Kontakt</h4>
+                    <p><i class="fas fa-envelope"></i> info@treguprodukteve.al</p>
+                    <p><i class="fas fa-phone"></i> +355 69 123 4567</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Rrjetet Sociale</h4>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 TreguProdukteve.al - Të gjitha të drejtat e rezervuara.</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+    <script src="js/main.js"></script>
+    <script src="js/mainfotod.js"></script>
+    <script src="js/mainfotom.js"></script>
+</html>

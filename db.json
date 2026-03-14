@@ -1,0 +1,114 @@
+{
+  "companies": [
+    {
+      "id": "1",
+      "name": "Ulliri Jon",
+      "sector": "ushqimore",
+      "email": "kontakt@ullirijon.al",
+      "phone": "+355 69 123 4567",
+      "address": "Tiranë, Shqipëri",
+      "password": "ulliri123",
+      "logo": "fa-solid fa-leaf",
+      "products": [
+        {
+          "id": 101,
+          "name": "Vaj Ulliri Extra",
+          "price": 7.5,
+          "unit": "Litr",
+          "features": [
+            "BIO",
+            "Organik",
+            "Prodhim Vendor"
+          ],
+          "image": "fa-solid fa-oil-can"
+        },
+        {
+          "id": 1773324213401,
+          "name": "oxhaku",
+          "price": 50,
+          "unit": "copë",
+          "sector": "teknike-bardhe",
+          "features": [],
+          "description": "",
+          "category": "pjekje",
+          "stock": "0",
+          "image": "fa-solid fa-box"
+        }
+      ]
+    },
+    {
+      "id": "1773271709990",
+      "name": "ak",
+      "email": "ingagim@hotmail.com",
+      "phone": "0631541692",
+      "sector": "higjienike",
+      "address": "presheve",
+      "password": "admin",
+      "logo": "fa-solid fa-building",
+      "products": [
+        {
+          "id": 1773281565220,
+          "name": "rrobat",
+          "price": 2,
+          "unit": "copë",
+          "sector": "tekstile",
+          "features": [],
+          "description": "",
+          "category": "",
+          "stock": "0",
+          "image": "fa-solid fa-box"
+        },
+        {
+          "id": 1773324055185,
+          "name": "kaftori",
+          "price": 100,
+          "unit": "copë",
+          "sector": "teknike-bardhe",
+          "features": [],
+          "description": "",
+          "category": "pjekje",
+          "stock": "0",
+          "image": "fa-solid fa-box"
+        },
+        {
+          "id": 1773324602555,
+          "name": "shamponA",
+          "price": 4,
+          "unit": "250ml",
+          "sector": "higjienike",
+          "features": [],
+          "description": "",
+          "category": "",
+          "stock": "0",
+          "image": "fa-solid fa-box"
+        },
+        {
+          "id": 1773324710686,
+          "name": "smoki",
+          "price": 1,
+          "unit": "500g",
+          "sector": "ushqimore",
+          "features": [],
+          "description": "",
+          "category": "ushqim",
+          "stock": "0",
+          "image": "fa-solid fa-box"
+        },
+        {
+          "id": 1773358868398,
+          "name": "televizor",
+          "price": 120,
+          "unit": "copë",
+          "sector": "elektronik",
+          "features": [],
+          "description": "",
+          "category": "shikime",
+          "stock": "0",
+          "image": "fa-solid fa-box"
+        }
+      ],
+      "registeredDate": "2026-03-11T23:28:29.990Z"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
